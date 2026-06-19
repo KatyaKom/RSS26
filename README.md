@@ -1,4 +1,5 @@
-# RSS26
+# RSS26: Dependable AI for Robotics
+
 Robotics Summer School 2026
 
 Welcome to the the Robotics Summer School course on Safe (i.e. formally verifiable) AI for Robotics and Autinomous systems!
