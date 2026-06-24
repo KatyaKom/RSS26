@@ -34,7 +34,7 @@ uv pip install -e .
 
 ### B2: Use the lab's native Python 3.13 (Marabou pre-built)
 
-Marabou has been compiled from source on the lab machines and is available in the native Python 3.13 environment.
+Marabou has been compiled from source on the lab machines and is available in the native Python 3.13 environment. However, has had some issues with the vehicle backend compataibility. Recommended to proceed with B1 if on lab machine, or option C.
 
 ```bash
 python3.13 -m venv .venv
