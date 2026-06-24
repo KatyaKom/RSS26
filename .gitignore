@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Vehicle generated files
+*.vclo
+tmp*.vcl
+
+# Model outputs
+models/
+
+# Build / dist
+dist/
+build/
+
+# OS
+.DS_Store
