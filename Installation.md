@@ -14,3 +14,9 @@ This part will follows the first two chapters of the [Vehicle tutorial](https://
 All supporting exercises, code and infrastructure can be downloaded from the [tutorial repository](https://github.com/vehicle-lang/tutorial). These include all relevant property specifications, trained neural networks in ONNX format, data in IDX format, and any necessary instructions.
 
 ## Part 2
+
+In addition to `vehicle-lang`, to run the ML portion, the following python packages are required:
+- `scikit-learn`
+- `tensorflow`
+- `pandas`
+- `idx2numpy`
