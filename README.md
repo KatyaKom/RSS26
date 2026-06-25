@@ -14,7 +14,7 @@ Welcome to the the Robotics Summer School course on Safe (i.e. formally verifiab
 
 ## Lab exercises
 
-[Part 1. Verifying Neural Networks with Vehicle.](Part1.md) 
+[Part 1. Verifying Neural Networks with Vehicle.](https://github.com/KatyaKom/RSS26/tree/main/Part1) 
 
 [Part 2. End-to-end verification and training for autonomous systems with neural components. The medical case study.](https://github.com/KatyaKom/RSS26/tree/main/Part2)
 
