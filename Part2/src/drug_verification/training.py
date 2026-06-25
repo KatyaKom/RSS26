@@ -142,9 +142,13 @@ def update_vcl_scaler(scaler, y_scaler=None, spec_path="pk.vcl"):
     print(f"  meanScalingValues        = [{mean_str}]")
     print(f"  standardDeviationValues  = [{std_str}]")
 
+    idx2numpy.convert_to_file("pk_mean.idx", scaler.mean_)
+    idx2numpy.convert_to_file("pk_std.idx", scaler.scale_)
+
     if y_scaler is not None:
         print(f"  y_mean (dose scaler)     = {y_scaler.mean_[0]:.8g}")
         print(f"  y_std  (dose scaler)     = {y_scaler.scale_[0]:.8g}")
+    
 
 
 def export_onnx(model, out_path="models/pk.onnx", positive_clamp=True):
