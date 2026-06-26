@@ -14,13 +14,13 @@ type OutputVector= Tensor Real [1]
 -- They must match the StandardScaler fitted during training exactly; any
 -- divergence means verification applies to different normalisation than the
 -- exported ONNX model uses, silently invalidating the formal proof.
--- @dataset
+@dataset
 meanScalingValues : UnnormalisedInputVector
-meanScalingValues = [2.6251915, 38.070456, 14.064574, 50.803191, 76.441588]
+-- meanScalingValues = [2.6251915, 38.070456, 14.064574, 50.803191, 76.441588]
 
--- @dataset
+@dataset
 standardDeviationValues : UnnormalisedInputVector
-standardDeviationValues =  [2.1576534, 0.49660919, 1.7778004, 23.166708, 14.39579]
+-- standardDeviationValues =  [2.1576534, 0.49660919, 1.7778004, 23.166708, 14.39579]
 
 normalise : UnnormalisedInputVector -> InputVector
 normalise x = foreach i .

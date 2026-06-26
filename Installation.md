@@ -15,8 +15,4 @@ All supporting exercises, code and infrastructure can be downloaded from the [tu
 
 ## Part 2
 
-In addition to `vehicle-lang`, to run the ML portion, the following python packages are required:
-- `scikit-learn`
-- `tensorflow`
-- `pandas`
-- `idx2numpy`
+There are specific install instructions in [Part 2](https://github.com/KatyaKom/RSS26/tree/main/Part2), if you are having any difficulty with Part 1 we recommend solution B1 from the Part 2 install.
