@@ -29,16 +29,15 @@ from vehicle_lang.loss import tensorflow as loss_tf
 # instance method, not the module-level function) uses redirect_stdout instead
 # and is unaffected by TF's early initialisation.  We patch the module-level
 # function to use that path.
-try:
-    from vehicle_lang.session._session import Session as _VehicleSession
-    import vehicle_lang.session as _vcl_session
 
-    def _check_output_no_pty(args):
-        return _VehicleSession().__enter__().check_output(args)
+from vehicle_lang.session._session import Session as _VehicleSession
+import vehicle_lang.session as _vcl_session
 
-    _vcl_session.check_output = _check_output_no_pty
-except Exception:
-    pass  # If the patch fails, fall through to the default behaviour.
+def _check_output_no_pty(args):
+    return _VehicleSession().__enter__().check_output(args)
+
+_vcl_session.check_output = _check_output_no_pty
+
 # ───────────────────────────────────────────────────────────────────────────
 
 
@@ -86,6 +85,26 @@ def generate_training_spec(
     training_ceiling = C_safe
 
     return f"""\
+p : Real
+p = 1
+
+qllAdditive : DifferentiableTensorLogic
+qllAdditive =
+  {{ trueElement               = -infinity
+  , falseElement               = infinity
+  , pointwiseNegation          = \\x -> -x
+  , pointwiseConjunction       = \\{{dims}} x y -> (const (1/p) dims) * log(exp(const p dims * x) + exp(const p dims * y))
+  , pointwiseDisjunction       = \\{{dims}} x y -> -(const (1/p) dims) * log(exp(const (-p) dims * x) + exp(const (-p) dims * y))
+  , pointwiseLessThan          = \\x y -> x - y
+  , pointwiseLessEqualThan     = \\x y -> x - y
+  , pointwiseGreaterThan       = \\x y -> y - x
+  , pointwiseGreaterEqualThan  = \\x y -> y - x
+  , pointwiseEqual             = \\x y -> max (x - y) (y - x)
+  , pointwiseNotEqual          = \\x y -> - max (x - y) (y - x)
+  , reduceConjunction          = \\{{dims}} xs -> (1/p) * log(reduceAdd (exp (const p dims * xs)))
+  , reduceDisjunction          = \\{{dims}} xs -> (1/p) * log(reduceAdd (exp (const (-p) dims * xs)))
+  }}
+
 -- Auto-generated training spec for safe — do not edit by hand.
 -- Generated from pk.vcl with concrete parameter and scaler values inlined.
 -- The if/else branch on Ka vs Ke is resolved at generation time.
@@ -122,7 +141,7 @@ safeInput x =
     36.5 <= x ! temp   <= 40 and
     7.5  <= x ! wbc    <= 20 and
     18   <= x ! age    <= 89 and
-    50   <= x ! weight <= 100
+    50   <= x ! weight <= (if True then 100 else qllAdditive.trueElement)
 
 safeOutput : UnnormalisedInputVector -> Bool
 safeOutput x =
@@ -162,7 +181,7 @@ def load_drug_verification_constraints(
         Dict mapping property name -> callable ``fn(pk=network_fn) -> tensor``.
     """
     if logic is None:
-        logic = vcl.DifferentiableLogic.Vehicle
+        logic = vcl.CustomDifferentiableLogic("qllAdditive")
 
     props = list(properties) if properties else ["safe"]
     result = {}

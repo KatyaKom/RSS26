@@ -330,30 +330,48 @@ def train_model_with_constraint(
             with tf.GradientTape(persistent=True) as tape:
                 preds = model(x_batch, training=True)
                 task_loss = tf.reduce_mean(tf.square(preds - y_batch))
-                if constraint_active:
-                    constraint_loss = tf.cast(
-                        tf.reduce_mean(constraint_fn(pk=network_fn)), tf.float32
-                    )
-                else:
-                    constraint_loss = tf.constant(0.0)
-
-            if constraint_active:
-                batch_info = grad_norm.balance(
-                    task_loss=task_loss,
-                    constraint_loss=constraint_loss,
-                    tape=tape,
-                    model_optimizer=optimizer,
-                    model_variables=model.trainable_variables,
+                constraint_loss = tf.cast(
+                    tf.reduce_mean(constraint_fn(pk=network_fn)), tf.float32
                 )
+
+            # if constraint_active:
+            #     batch_info = grad_norm.balance(
+            #         task_loss=task_loss,
+            #         constraint_loss=constraint_loss,
+            #         tape=tape,
+            #         model_optimizer=optimizer,
+            #         model_variables=model.trainable_variables,
+            #     )
+            # else:
+            #     grads = tape.gradient(task_loss, model.trainable_variables)
+            #     optimizer.apply_gradients(zip(grads, model.trainable_variables))
+            #     batch_info = {
+            #         "total_loss": task_loss,
+            #         "grad_norm_loss": tf.constant(0.0),
+            #         "task_weight": tf.constant(1.0),
+            #         "constraint_weight": tf.constant(0.0),
+            #     }
+            if constraint_active:
+                grads = tape.gradient(tf.math.log(tf.math.exp(constraint_loss) + tf.math.exp(task_loss)), model.trainable_variables)
             else:
                 grads = tape.gradient(task_loss, model.trainable_variables)
-                optimizer.apply_gradients(zip(grads, model.trainable_variables))
-                batch_info = {
-                    "total_loss": task_loss,
-                    "grad_norm_loss": tf.constant(0.0),
-                    "task_weight": tf.constant(1.0),
-                    "constraint_weight": tf.constant(0.0),
-                }
+            grad_var_pairs = [
+                (g, v)
+                for g, v in zip(grads, model.trainable_variables)
+                if g is not None
+            ]
+            if grad_var_pairs:
+                optimizer.apply_gradients(grad_var_pairs)
+            else:
+                warnings.warn(
+                    "No gradients for this batch; skipping optimizer step."
+                )
+            batch_info = {
+                "total_loss": task_loss,
+                "grad_norm_loss": tf.constant(0.0),
+                "task_weight": tf.constant(1.0),
+                "constraint_weight": tf.constant(0.0),
+            }
             del tape
 
             epoch_task += float(task_loss.numpy())
